@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.orm import declarative_base
+
 from src.database import metadata
 
 Base = declarative_base(metadata=metadata)
+
 
 class Todo(Base):
     __tablename__ = "todos"

@@ -7,7 +7,10 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.config import app_configs, settings
 from src.database import engine
-from src.models.todo import Base, Todo  # 모델을 임포트해서 metadata에 등록되도록 함
+from src.models.todo import Base  # 모델을 임포트해서 metadata에 등록되도록 함
+
+from .routers import todo as todo_router
+
 
 @asynccontextmanager
 async def lifespan(_application: FastAPI) -> AsyncGenerator:
@@ -16,6 +19,7 @@ async def lifespan(_application: FastAPI) -> AsyncGenerator:
         await conn.run_sync(Base.metadata.create_all)
     yield
     # Shutdown 처리 (필요 시 추가)
+
 
 app = FastAPI(**app_configs, lifespan=lifespan)
 
@@ -34,9 +38,10 @@ if settings.ENVIRONMENT.is_deployed:
         environment=settings.ENVIRONMENT,
     )
 
+
 @app.get("/healthcheck", include_in_schema=False)
 async def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
 
-from .routers import todo as todo_router
+
 app.include_router(todo_router.router, prefix="/todos", tags=["Todos"])
