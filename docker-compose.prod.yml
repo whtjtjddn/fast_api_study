@@ -1,6 +1,15 @@
-version: '3.7'
-
 services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   app:
     container_name: app
     image: app
@@ -13,4 +22,8 @@ services:
       dockerfile: Dockerfile.prod
     command:
       - entrypoints/gunicorn.sh
+    depends_on:
+      - db
 
+volumes:
+  postgres_data:
