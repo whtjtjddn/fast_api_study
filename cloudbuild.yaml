@@ -1,4 +1,5 @@
 steps:
+  # 1. Docker Build (BuildKit 활성화)
   - name: 'gcr.io/cloud-builders/docker'
     env: ['DOCKER_BUILDKIT=1']
     args: [
@@ -7,28 +8,30 @@ steps:
       '-f', 'Dockerfile.prod',
       '.'
     ]
+
+  # 2. Docker Push
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - push
-      - >-
-        $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+      - 'gcr.io/$PROJECT_ID/app:latest'
     id: Push
+
+  # 3. Deploy to Cloud Run (업데이트)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: gcloud
     args:
       - run
       - services
       - update
-      - $_SERVICE_NAME
+      - 'app'
       - '--platform=managed'
-      - >-
-        --image=$_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
-      - >-
-        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID
+      - '--image=gcr.io/$PROJECT_ID/app:latest'
       - '--region=$_DEPLOY_REGION'
       - '--quiet'
     id: Deploy
-    entrypoint: gcloud
+
 images:
   - 'gcr.io/$PROJECT_ID/app:latest'
+
 options:
   logging: CLOUD_LOGGING_ONLY
