@@ -7,5 +7,3 @@ steps:
       '-f', 'Dockerfile.prod',
       '.'
     ]
-images:
-  - 'gcr.io/$PROJECT_ID/app:latest'
