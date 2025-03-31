@@ -15,8 +15,6 @@ from .routers import todo as todo_router
 @asynccontextmanager
 async def lifespan(_application: FastAPI) -> AsyncGenerator:
     # Startup: 테이블 생성 수행
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     yield
     # Shutdown 처리 (필요 시 추가)
 
