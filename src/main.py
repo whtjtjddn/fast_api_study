@@ -6,8 +6,6 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from src.config import app_configs, settings
-from src.database import engine
-from src.models.todo import Base  # 모델을 임포트해서 metadata에 등록되도록 함
 
 from .routers import todo as todo_router
 
